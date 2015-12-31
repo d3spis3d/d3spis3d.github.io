@@ -45,4 +45,72 @@ module.exports = {
 
 The config defines an entry point file, here `app.js`, that Webpack will start the dependencies tree from. It also defines a set of loaders to process each asset type. Each loader definition has a regex test to match against filename, and then a loader, pipeline of loaders separated by `!`, or an array of loaders.
 
-Pipelines and arrays of loaders are processed from right to left in Webpack, which can be a bit tricky when first getting started. In this example JavaScript files will first be preLoaded through ESLint to lint for errors, they will then be passed through the Babel.js loader to transpile ES6 code to ES5, the resulting code will be passed through the ng-annotate loader to make the AngularJS code minification safe.
+Pipelines and arrays of loaders are processed from right to left in Webpack, which can be a bit tricky when first getting started. In this example JavaScript files will first be preLoaded through ESLint to lint for errors, they will then be loaded through the Babel.js loader to transpile ES6 code to ES5, the resulting code will be passed through the ng-annotate loader to make the AngularJS code minification safe.
+
+#Struturing the AngularJS app#
+
+{% highlight javascript %}
+project
+  |_ app
+     |_ components
+     |_ services
+     |_ directives
+     |_ images
+     |_ app.js
+  |_ test
+{% endhighlight %}
+
+Above is the project layout that I recommend for AngularJS applications with Webpack. The components folder will holder the controllers, templates, and stylesheets for each section of the application, and each section of the application will have it's own routes file. Services and directives are separated from the main AngularJS module and will be loaded as dependencies to the main module. In app.js we setup the main AngularJS module, import the routes files for each component of the application and import the services and directives modules.
+
+Lets start with a sample component, a home page with a welcome message.
+
+{% highlight javascript %}
+// app/components/home/home-controller.js
+export default /*@ngInject*/ function() {
+  this.welcomeMessage = 'Welcome to our sample application';
+}
+{% endhighlight %}
+
+{% highlight html %}
+<!-- app/components/home/home.html -->
+<header>
+  <h1>Angular + ES6 + Webpack Application</h1>
+</header>
+<section>
+  <p>
+    { { homeCtrl.welcomeMessage } }
+  </p>
+</section>
+{% endhighlight %}
+
+{% highlight css %}
+/* app/components/home/home.scss */
+header {
+  background-color: gray;
+}
+section {
+    color: red;
+}
+{% endhighlight %}
+
+{% highlight javascript %}
+// app/components/home/home.routes.js
+import mainCtrl from 'components/home/home-controller';
+import 'components/home/home.html';
+import 'components/home/home.scss';
+
+export default /*@ngInject*/ function($stateProvider) {
+  $stateProvider.state('home', {
+      url: '/',
+      views: {
+        '@': {
+          controller: mainCtrl,
+          controllerAs: 'mainCtrl',
+          templateUrl: '/components/home/home.html'
+        }
+      }
+    });
+}
+{% endhighlight %}
+
+The controller and routes config functions are defined as the default export of ES6 modules. The routes config import the controller and associated template, and stylesheet. These exports/imports will be converted to CommonJS modules and `require()` calls by Babel.js.
