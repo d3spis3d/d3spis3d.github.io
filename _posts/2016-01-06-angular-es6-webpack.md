@@ -8,11 +8,11 @@ published: true
 
 > tl;dr I've created a Yeoman generator to scaffold apps for AngularJS + ES6 + Webpack. Find it [here](https://www.npmjs.com/package/generator-angular-es6-webpack)
 
- Recently I have been undertaking a project, using AngularJS and Webpack. At first the AngularJS framework does not seem entirely suitable for use with Webpack, but with a different approach than I would typically take to AngularJS application structure, they play nicely. These thoughts are the results of that effort, and I hope you find them useful if you are exploring building application with AngularJS and Webpack. I have also created a Yeoman generator, [generator-angular-es6-webpack](https://www.npmjs.com/package/generator-angular-es6-webpack) which you can use to generator this project structure.
+ Recently I have been undertaking a project, using AngularJS and Webpack. At first the AngularJS framework does not seem entirely suitable for use with Webpack, but with a different approach than I would typically take to AngularJS application structure, they play nicely. These thoughts are the results of that effort, and I hope you find them useful if you are exploring building application with AngularJS and Webpack. I have also created a Yeoman generator, [generator-angular-es6-webpack](https://www.npmjs.com/package/generator-angular-es6-webpack) which you can use to generate this project structure.
 
 #Setting up Webpack#
 
-Webpack runs predominately on [loaders](https://webpack.github.io/docs/loaders.html). Loaders process certain types of assets, JavaScript but also HTML, CSS, and images, when they are `require()`'d in the project. Webpack will build our bundle by starting at an entry point, usually the `app.js` file, and mapping through all the dependencies loaded with `require()`.
+Webpack runs predominately on [loaders](https://webpack.github.io/docs/loaders.html). Loaders process certain types of assets, not only JavaScript but also HTML, CSS, and images, when they are `require()`'d in the project. Webpack will build our bundle by starting at an entry point, usually the `app.js` file, and mapping through all the dependencies loaded with `require()`.
 
 Here is a simple Webpack config file:
 
@@ -115,9 +115,9 @@ The controller and routes config functions are defined as the default export of 
 
 #Services#
 
-As mentioned previously, the services in our application will be separated out into a separate Angular module. This allows the sharing of common services between applications, as we can import only the services we need from a common repository and add them to our services module.
+As mentioned previously, the services in our application will be separated out into another Angular module. This allows the sharing of common services between applications, as we can import only the services we need from a common repository and add them to our services module.
 
-Let's create a basic service and setup the services module.
+Let's create a basic service to fetch weather data, and setup the services module.
 
 {% highlight javascript %}
 // app/services/weather-service.js
@@ -148,13 +148,16 @@ Now that we have a component and the services module we can look at setting up t
 // app/app.js
 import 'jquery';
 import angular from 'angular';
+import 'angular-resource';
+import 'angular-ui-router';
 
 import 'services/services';
 import 'directives/directives';
 
 import homeRoutes from 'componets/home/home.routes';
 
-angular.module('ngES6WebpackApp', [ngResource, 'ui.router', 'services', 'directives'])
+angular.module('ngES6WebpackApp',
+  [ngResource, 'ui.router', 'services', 'directives'])
 .config(homeRoutes);
 {% endhighlight %}
 
@@ -189,6 +192,6 @@ export default /*@ngInject*/ function(Weather) {
 
 #Conclusion#
 
-I hope this post has given you some ideas on how to structure AngularJS apps for bundling with Webpack. Again, I have created a Yeoman generator for this application structure, [generator-angular-es6-webpack](https://www.npmjs.com/package/generator-angular-es6-webpack), if you're interested in using these tools try it out. It will scaffold additional features not covered here, like a full Webpack configuration with development server, Gulp tasks, and unit tests with Karma.
+I hope this post has given you some ideas on how to structure AngularJS apps for bundling with Webpack. As I mentioned above, I have created a Yeoman generator for this application structure, [generator-angular-es6-webpack](https://www.npmjs.com/package/generator-angular-es6-webpack). If you're interested in using these tools try it out. It will scaffold additional features not covered here, like a full Webpack configuration with development server, Gulp tasks, and unit tests with Karma.
 
 tags: angularjs, webpack, es6, es2015 , babeljs
